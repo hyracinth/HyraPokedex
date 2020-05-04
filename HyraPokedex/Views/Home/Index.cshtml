@@ -1,0 +1,19 @@
+﻿@model IEnumerable<HyraPokedex.Models.PokeApi.Pokemon>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+</head>
+<body>
+    @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model)
+    {
+        <div>@currPokemon.ID | @currPokemon.Name | @currPokemon.URL</div>
+    }
+</body>
+</html>
