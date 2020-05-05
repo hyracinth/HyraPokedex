@@ -11,19 +11,9 @@ namespace HyraPokedex.Controllers
 {
     public class HomeController : Controller
     {
-        List<Pokemon> pokemons = new List<Pokemon>();
-        public async Task<IActionResult> Index()
+        public  ActionResult Index()
         {
-            using (var httpClient = new HttpClient())
-            {
-                using (var response = await httpClient.GetAsync("https://pokeapi.co/api/v2/pokemon/?limit=385/"))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    var jsonResponse = JsonConvert.DeserializeObject<PokeApiResponse<Pokemon>>(apiResponse);
-                    pokemons.AddRange(jsonResponse.Results);
-                }
-            }
-            return View(pokemons);
+            return View();
         }
     }
 }

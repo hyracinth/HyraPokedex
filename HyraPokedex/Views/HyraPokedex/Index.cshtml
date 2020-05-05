@@ -1,0 +1,27 @@
+﻿
+@model HyraPokedex.Models.HyraPokedexVM
+@{ Layout = "_Layout"; }
+
+<h1>Pokedex</h1>
+
+@using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
+{
+    @Html.TextBoxFor(model => model.searchPokemon)
+    <button type="submit" class="btn btn-light btn-sm">Search</button>
+}
+
+@*<div class="md-form mb-4">
+    <textarea id="userInputPokemon" class="md-textarea form-control" rows="1"></textarea>
+    <label>Search for a Pokemon</label>
+    <button type="button" class="btn btn-light btn-sm"
+            onclick="location.href='@Url.Action("Search", "HyraPokedex")'">
+        Search
+    </button>
+</div>*@
+
+<ul class="list-group">
+    @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
+    {
+        <li class="list-group-item">@currPokemon.ID | @currPokemon.Name</li>
+    }
+</ul>

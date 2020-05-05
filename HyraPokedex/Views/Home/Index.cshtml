@@ -1,19 +1,14 @@
-﻿@model IEnumerable<HyraPokedex.Models.PokeApi.Pokemon>
-@{
-    Layout = null;
-}
+﻿
+@{ Layout = "_Layout"; }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Home</title>
-</head>
-<body>
-    @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model)
-    {
-        <div>@currPokemon.ID | @currPokemon.Name | @currPokemon.URL</div>
-    }
-</body>
-</html>
+<div class="jumbotron card card-image" style="background-color:darkslategrey">
+    <div class="text-white text-center py-5 px-4">
+        <div>
+            <h2 class="card-title h1-responsive pt-3 mb-5 font-bold"><strong>Welcome to Hyra Pokedex</strong></h2>
+            <p class="mx-5 mb-5">
+                This is a small project for learning.
+            </p>
+            <a href="/HyraPokedex/Index" class="btn btn-outline-white btn-md">Go to Pokedex</a>
+        </div>
+    </div>
+</div>
