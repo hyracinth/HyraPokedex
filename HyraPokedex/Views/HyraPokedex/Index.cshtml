@@ -1,40 +1,51 @@
 ﻿
 @model HyraPokedex.Models.HyraPokedexVM
-@{ Layout = "_Layout"; }
+@{ Layout = "_Layout"; ViewBag.Title = "HyraPokedex - Pokedex";}
 
-<h1 class="display-4" style="text-align:center">Pokedex</h1>
+<div class="stylish-color-dark">
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <ul class="list-group" style="height:90vh;overflow:auto">
-                @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
-                {
-                    <li class="list-group-item">@currPokemon.ID | @currPokemon.Name</li>
-                }
-            </ul>
-        </div>
+    <h4 class="h4-responsive white-text" style="text-align:center;margin:20px">Pokedex</h4>
 
-        <div class="col">
-            @using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
-            {
-            <div class="md-form mb-4">
-                @Html.TextBoxFor(model => model.searchPokemon, new {
-                    @id="userPokeTextbox",
-                    @class="md-textarea form-control"
-                })
-                <label for="userPokeTextbox">Search for a Pokemon</label>
-                <input name="search" value="Search" type="submit" class="btn btn-light btn-sm">
-                <input name="clear" value="Clear" type="submit" class="btn btn-light btn-sm"/>
-            </div>
-            }
-
-            @if (Model.statusMessage != null)
-            {
-                <div class="alert alert-success" role="alert">
-                    @Model.statusMessage
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <div style="height:65vh;overflow:auto;margin-bottom:20px">
+                    <table class="table table-sm table-hover table-responsive white-text" >
+                        <tbody>
+                            @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
+                            {
+                                <tr>
+                                    <td>@currPokemon.ID</td>
+                                    <td>@currPokemon.Name</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            }
+            </div>
+
+            <div class="col">
+                @using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
+                {
+                    <div class="md-form mb-4">
+                        @Html.TextBoxFor(model => model.searchPokemon, new
+                        {
+                            @id = "userPokeTextbox",
+                            @class = "md-textarea form-control white-text"
+                        })
+                        <label for="userPokeTextbox">Search for a Pokemon</label>
+                        <input name="search" value="Search" type="submit" class="btn btn-light btn-sm">
+                        <input name="clear" value="Clear" type="submit" class="btn btn-light btn-sm" />
+                    </div>
+                }
+
+                @if (Model.statusMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @Model.statusMessage
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>

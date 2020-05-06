@@ -9,10 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\mdb\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="wwwroot\mdb\css\bootstrap.css">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>

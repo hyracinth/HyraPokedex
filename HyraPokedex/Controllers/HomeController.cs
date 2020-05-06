@@ -6,6 +6,7 @@ namespace HyraPokedex.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.Title = "HyraPokedex - Home";
             return View();
         }
     }
