@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using HyraPokedex.Models;
+﻿using HyraPokedex.Models;
 using HyraPokedex.Models.PokeApi;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace HyraPokedex.Controllers
 {
@@ -16,7 +13,6 @@ namespace HyraPokedex.Controllers
     {
         public static HyraPokedexVM pokeVM = new HyraPokedexVM()
         {
-            searchPokemon = String.Empty,
             masterListPokemon = new List<Pokemon>()
         };
         public async Task<IActionResult> Index()
@@ -25,7 +21,7 @@ namespace HyraPokedex.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.GetAsync("https://pokeapi.co/api/v2/pokemon/?limit=385/"))
+                    using (var response = await httpClient.GetAsync(PokeApiEnum.GET_ALL_POKEMON))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
                         var jsonResponse = JsonConvert.DeserializeObject<PokeApiResponse<Pokemon>>(apiResponse);
@@ -35,38 +31,62 @@ namespace HyraPokedex.Controllers
                         foreach (Pokemon currPoke in pokeVM.masterListPokemon)
                         {
                             currPoke.ID = counter++;
+                            currPoke.Name = currPoke.Name.ToLower();
                         }
                     }
                 }
             }
             return View(pokeVM);
-
         }
 
         [HttpPost]
-        public ActionResult Index(HyraPokedexVM hyraPokedexVM)
+        public ActionResult Index(HyraPokedexVM hyraPokedexVM, string search, string clear)
         {
-            List<Pokemon> filteredPokemon = new List<Pokemon>();
-            if (hyraPokedexVM.searchPokemon != String.Empty)
+            // if search is triggered
+            // else return all pokemon and reset
+            if (!string.IsNullOrEmpty(search))
             {
-                foreach (Pokemon currPokemon in pokeVM.masterListPokemon)
+                List<Pokemon> filteredPokemon = new List<Pokemon>();
+                // aggregate list of pokemon based on user input
+                if (!string.IsNullOrEmpty(hyraPokedexVM.searchPokemon))
                 {
-                    if (currPokemon.Name.Contains(hyraPokedexVM.searchPokemon))
+                    string searchPokemon = hyraPokedexVM.searchPokemon.ToLower();
+                    foreach (Pokemon currPokemon in pokeVM.masterListPokemon)
                     {
-                        filteredPokemon.Add(currPokemon);
+                        if (currPokemon.Name.Contains(searchPokemon))
+                        {
+                            filteredPokemon.Add(currPokemon);
+                        }
                     }
                 }
-            }
 
-            if (filteredPokemon.Count > 0)
-            {
-                return View(new HyraPokedexVM() { masterListPokemon = filteredPokemon });
+                // if there are pokemon that match user input, then return filtered list
+                // else return full list with error message
+                if (filteredPokemon.Count > 0)
+                {
+                    return View(new HyraPokedexVM()
+                    {
+                        masterListPokemon = filteredPokemon
+                    });
+                }
+                else
+                {
+                    return View(new HyraPokedexVM()
+                    {
+                        masterListPokemon = pokeVM.masterListPokemon,
+                        statusMessage = "No results found."
+                    });
+                }
             }
             else
             {
-                return View(pokeVM);
+                ModelState.Clear();
+                return View(new HyraPokedexVM()
+                {
+                    searchPokemon = String.Empty,
+                    masterListPokemon = pokeVM.masterListPokemon,
+                });
             }
         }
-
     }
 }

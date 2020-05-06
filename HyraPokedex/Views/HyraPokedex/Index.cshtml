@@ -2,26 +2,39 @@
 @model HyraPokedex.Models.HyraPokedexVM
 @{ Layout = "_Layout"; }
 
-<h1>Pokedex</h1>
+<h1 class="display-4" style="text-align:center">Pokedex</h1>
 
-@using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
-{
-    @Html.TextBoxFor(model => model.searchPokemon)
-    <button type="submit" class="btn btn-light btn-sm">Search</button>
-}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <ul class="list-group" style="height:90vh;overflow:auto">
+                @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
+                {
+                    <li class="list-group-item">@currPokemon.ID | @currPokemon.Name</li>
+                }
+            </ul>
+        </div>
 
-@*<div class="md-form mb-4">
-    <textarea id="userInputPokemon" class="md-textarea form-control" rows="1"></textarea>
-    <label>Search for a Pokemon</label>
-    <button type="button" class="btn btn-light btn-sm"
-            onclick="location.href='@Url.Action("Search", "HyraPokedex")'">
-        Search
-    </button>
-</div>*@
+        <div class="col">
+            @using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
+            {
+            <div class="md-form mb-4">
+                @Html.TextBoxFor(model => model.searchPokemon, new {
+                    @id="userPokeTextbox",
+                    @class="md-textarea form-control"
+                })
+                <label for="userPokeTextbox">Search for a Pokemon</label>
+                <input name="search" value="Search" type="submit" class="btn btn-light btn-sm">
+                <input name="clear" value="Clear" type="submit" class="btn btn-light btn-sm"/>
+            </div>
+            }
 
-<ul class="list-group">
-    @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
-    {
-        <li class="list-group-item">@currPokemon.ID | @currPokemon.Name</li>
-    }
-</ul>
+            @if (Model.statusMessage != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @Model.statusMessage
+                </div>
+            }
+        </div>
+    </div>
+</div>
