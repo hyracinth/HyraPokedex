@@ -88,5 +88,47 @@ namespace HyraPokedex.Controllers
                 });
             }
         }
+
+        public async Task<IActionResult> Details(int pokeId)
+        {
+            pokeVM.selectedPokemonId = pokeId;
+
+            Pokemon tempPokemon = null;
+            foreach(Pokemon currPokemon in pokeVM.masterListPokemon)
+            {
+                if(currPokemon.ID == pokeId)
+                {
+                    tempPokemon = currPokemon;
+                    break;
+                }
+            }
+
+            if (tempPokemon != null && !tempPokemon.DataRetrieved) {
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(tempPokemon.URL))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var jsonResponse = JsonConvert.DeserializeObject<Pokemon>(apiResponse);
+                        for (int ii = 0; ii < pokeVM.masterListPokemon.Count; ii++)
+                        {
+                            if (pokeVM.masterListPokemon[ii].ID == pokeId)
+                            {
+                                pokeVM.masterListPokemon[ii] = jsonResponse;
+                                pokeVM.masterListPokemon[ii].DataRetrieved = true;
+                                pokeVM.selectedPokemon = pokeVM.masterListPokemon[ii];
+                                break;
+                            }
+                        }
+                    }
+                }
+            } 
+            else if(tempPokemon.DataRetrieved)
+            {
+                pokeVM.selectedPokemon = pokeVM.masterListPokemon[pokeId - 1];
+            }
+
+            return RedirectToAction("Index", "HyraPokedex");
+        }
     }
 }

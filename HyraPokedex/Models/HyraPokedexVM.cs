@@ -8,5 +8,7 @@ namespace HyraPokedex.Models
         public string searchPokemon { get; set; }
         public string statusMessage { get; set; }
         public List<Pokemon> masterListPokemon { get; set; }
+        public int selectedPokemonId { get; set; }
+        public Pokemon selectedPokemon { get; set; }
     }
 }

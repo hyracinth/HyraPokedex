@@ -1,7 +1,10 @@
-﻿namespace HyraPokedex.Models.PokeApi
+﻿using Newtonsoft.Json;
+
+namespace HyraPokedex.Models.PokeApi
 {
     public class PokemonSprites
     {
-        public string front_default { get; set; }
+        [JsonProperty("front_default")]
+        public string FrontDefault { get; set; }
     }
 }
