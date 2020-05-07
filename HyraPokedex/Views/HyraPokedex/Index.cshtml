@@ -8,6 +8,7 @@
     }
 </style>
 
+
 <div class="stylish-color-dark">
 
     <h4 class="h4-responsive white-text" style="text-align:center;margin:20px">Pokedex</h4>
@@ -15,69 +16,51 @@
     <div class="container">
         <div class="row">
             <div class="col-3">
-
                 <div class="container" style="height:65vh;overflow:auto;margin-bottom:20px">
-                    @foreach (HyraPokedex.Models.PokeApi.Pokemon currPokemon in Model.masterListPokemon)
-                    {
-                        <a class="white-text" href=@Url.Action("Details", "HyraPokedex", new {pokeId = currPokemon.ID})>
-                            <div class="row">
-                                <div class="col-1">@currPokemon.ID</div>
-                                <div class="col uppercase">@currPokemon.Name</div>
-                            </div>
-                        </a>
-                    }
+                    @await Component.InvokeAsync("PokeList", new { pokemonList = Model.masterListPokemon, pokemonFilter = Model.searchPokemon })
                 </div>
             </div>
 
             <div class="col">
                 @using (Html.BeginForm("Index", "HyraPokedex", FormMethod.Post))
                 {
-                <div class="md-form mb-4">
-                    @Html.TextBoxFor(model => model.searchPokemon, new
-                    {
-                        @id = "userPokeTextbox",
-                        @class = "md-textarea form-control white-text"
-                    })
-                    <label for="userPokeTextbox">Search for a Pokemon</label>
-                    <input name="search" value="Search" type="submit" class="btn btn-light btn-sm">
-                    <input name="clear" value="Clear" type="submit" class="btn btn-light btn-sm" />
-                </div>
+                    <div class="md-form mb-4">
+                        @Html.TextBoxFor(model => model.searchPokemon, new
+                        {
+                            @id = "userPokeTextbox",
+                            @class = "md-textarea form-control white-text"
+                        })
+                        <label for="userPokeTextbox">Search for a Pokemon</label>
+                        <input name="search" value="Search" type="submit" class="btn btn-light btn-sm">
+                        <input name="clear" value="Clear" type="submit" class="btn btn-light btn-sm" />
+                    </div>
                 }
 
                 @if (Model.statusMessage != null)
                 {
-                <div class="alert alert-success" role="alert">
-                    @Model.statusMessage
-                </div>
+                    <div class="alert alert-success" role="alert">
+                        @Model.statusMessage
+                    </div>
                 }
 
                 @if (Model.selectedPokemonId == 0)
                 {
-                <p class="note note-secondary">
-                    <strong>Note:</strong> Choose a Pokemon from the list to show additional details!
-                </p>
+                    <p class="note note-secondary">
+                        <strong>Note:</strong> Choose a Pokemon from the list to show additional details!
+                    </p>
                 }
 
                 @if (Model.selectedPokemonId != 0)
                 {
-                <div class="card" style="width:20vw;">
-
-                    <!-- Card image -->
-                    <img class="card-img-top" src=@Model.selectedPokemon.Sprites.FrontDefault alt="Card image cap">
-
-                    <!-- Card content -->
-                    <div class="card-body">
-
-                        <!-- Title -->
-                        <h4 class="card-title uppercase"><a>@Model.selectedPokemon.Name</a></h4>
-                        <!-- Text -->
-                        <p class="card-text">
-                            Description not yet implemented
-                        </p>
-
+                    <div class="card col-sm-10 col-md-4" style="overflow:auto">
+                        <img class="card-img-top" src=@Model.selectedPokemon.Sprites.FrontDefault alt="Card image cap">
+                        <div class="card-body">
+                            <h4 class="card-title uppercase"><a>@Model.selectedPokemon.Name</a></h4>
+                            <p class="card-text">
+                                Description not yet implemented
+                            </p>
+                        </div>
                     </div>
-
-                </div>
                 }
             </div>
         </div>

@@ -42,51 +42,16 @@ namespace HyraPokedex.Controllers
         [HttpPost]
         public ActionResult Index(HyraPokedexVM hyraPokedexVM, string search, string clear)
         {
-            // if search is triggered
-            // else return all pokemon and reset
-            if (!string.IsNullOrEmpty(search))
+            if(!string.IsNullOrEmpty(search))
             {
-                List<Pokemon> filteredPokemon = new List<Pokemon>();
-                // aggregate list of pokemon based on user input
-                if (!string.IsNullOrEmpty(hyraPokedexVM.searchPokemon))
-                {
-                    string searchPokemon = hyraPokedexVM.searchPokemon.ToLower();
-                    foreach (Pokemon currPokemon in pokeVM.masterListPokemon)
-                    {
-                        if (currPokemon.Name.Contains(searchPokemon))
-                        {
-                            filteredPokemon.Add(currPokemon);
-                        }
-                    }
-                }
-
-                // if there are pokemon that match user input, then return filtered list
-                // else return full list with error message
-                if (filteredPokemon.Count > 0)
-                {
-                    return View(new HyraPokedexVM()
-                    {
-                        masterListPokemon = filteredPokemon
-                    });
-                }
-                else
-                {
-                    return View(new HyraPokedexVM()
-                    {
-                        masterListPokemon = pokeVM.masterListPokemon,
-                        statusMessage = "No results found."
-                    });
-                }
+                pokeVM.searchPokemon = hyraPokedexVM.searchPokemon;
             }
             else
             {
                 ModelState.Clear();
-                return View(new HyraPokedexVM()
-                {
-                    searchPokemon = String.Empty,
-                    masterListPokemon = pokeVM.masterListPokemon,
-                });
+                pokeVM.searchPokemon = null;
             }
+            return View(pokeVM);
         }
 
         public async Task<IActionResult> Details(int pokeId)
