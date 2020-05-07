@@ -1,40 +1,42 @@
 ﻿using HyraPokedex.Models;
 using HyraPokedex.Models.PokeApi;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HyraPokedex.Controllers
 {
     public class HyraPokedexController : Controller
     {
+        private IPokeApiService _pokeApi;
+
         public static HyraPokedexVM pokeVM = new HyraPokedexVM()
         {
             masterListPokemon = new List<Pokemon>()
         };
+
+        public HyraPokedexController(IPokeApiService pokeApiService)
+        {
+            _pokeApi = pokeApiService;
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             if (pokeVM.masterListPokemon.Count < 1)
             {
-                using (var httpClient = new HttpClient())
-                {
-                    using (var response = await httpClient.GetAsync(PokeApiEnum.GET_ALL_POKEMON))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        var jsonResponse = JsonConvert.DeserializeObject<PokeApiResponse<Pokemon>>(apiResponse);
-                        pokeVM.masterListPokemon = new List<Pokemon>();
-                        pokeVM.masterListPokemon.AddRange(jsonResponse.Results);
-                        int counter = 1;
-                        foreach (Pokemon currPoke in pokeVM.masterListPokemon)
-                        {
-                            currPoke.ID = counter++;
-                            currPoke.Name = currPoke.Name.ToLower();
-                        }
-                    }
-                }
+                List<Pokemon> listPokemon = await _pokeApi.GetAllPokemon();
+                pokeVM.masterListPokemon = new List<Pokemon>();
+                pokeVM.masterListPokemon.AddRange(listPokemon);
+            }
+
+            // TODO: Extract into helper function?
+            int counter = 1;
+            foreach (Pokemon currPoke in pokeVM.masterListPokemon)
+            {
+                currPoke.ID = counter++;
+                currPoke.Name = currPoke.Name.ToLower();
             }
             return View(pokeVM);
         }
@@ -42,58 +44,63 @@ namespace HyraPokedex.Controllers
         [HttpPost]
         public ActionResult Index(HyraPokedexVM hyraPokedexVM, string search, string clear)
         {
-            if(!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(search))
             {
                 pokeVM.searchPokemon = hyraPokedexVM.searchPokemon;
             }
             else
             {
-                ModelState.Clear();
-                pokeVM.searchPokemon = null;
+                ResetView();
             }
             return View(pokeVM);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int pokeId)
         {
-            pokeVM.selectedPokemonId = pokeId;
-
-            Pokemon tempPokemon = null;
-            foreach(Pokemon currPokemon in pokeVM.masterListPokemon)
+            // if pokemon data not retrieved yet, retrieve it
+            // if pokemon data retrieved, assign
+            // else null
+            Pokemon existingPokemon = pokeVM.masterListPokemon.First(x => x.ID == pokeId);
+            int existingPokeId = -1;
+            if (existingPokemon != null && !existingPokemon.DataRetrieved)
             {
-                if(currPokemon.ID == pokeId)
+                existingPokeId = pokeVM.masterListPokemon.IndexOf(existingPokemon);
+                Pokemon updatedPokemon = await _pokeApi.GetPokemonDetail(existingPokemon.URL);
+                if (existingPokeId != -1)
                 {
-                    tempPokemon = currPokemon;
-                    break;
+                    UpdateMasterList(ref pokeVM, existingPokeId, updatedPokemon);
+                    pokeVM.selectedPokemon = pokeVM.masterListPokemon[existingPokeId];
                 }
             }
-
-            if (tempPokemon != null && !tempPokemon.DataRetrieved) {
-                using (var httpClient = new HttpClient())
-                {
-                    using (var response = await httpClient.GetAsync(tempPokemon.URL))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        var jsonResponse = JsonConvert.DeserializeObject<Pokemon>(apiResponse);
-                        for (int ii = 0; ii < pokeVM.masterListPokemon.Count; ii++)
-                        {
-                            if (pokeVM.masterListPokemon[ii].ID == pokeId)
-                            {
-                                pokeVM.masterListPokemon[ii] = jsonResponse;
-                                pokeVM.masterListPokemon[ii].DataRetrieved = true;
-                                pokeVM.selectedPokemon = pokeVM.masterListPokemon[ii];
-                                break;
-                            }
-                        }
-                    }
-                }
-            } 
-            else if(tempPokemon.DataRetrieved)
+            else if (existingPokemon.DataRetrieved)
             {
-                pokeVM.selectedPokemon = pokeVM.masterListPokemon[pokeId - 1];
+                existingPokeId = pokeVM.masterListPokemon.IndexOf(existingPokemon);
+                pokeVM.selectedPokemon = pokeVM.masterListPokemon[existingPokeId];
+            }
+            else
+            {
+                pokeVM.selectedPokemon = null;
             }
 
             return RedirectToAction("Index", "HyraPokedex");
+        }
+
+        // Reassigning the URL value. Perhaps unnecessary
+        private void UpdateMasterList(ref HyraPokedexVM pokeVM, int pokeMasterIndex, Pokemon updatedPokemon)
+        {
+            string url = pokeVM.masterListPokemon[pokeMasterIndex].URL;
+            pokeVM.masterListPokemon[pokeMasterIndex] = updatedPokemon;
+            pokeVM.masterListPokemon[pokeMasterIndex].DataRetrieved = true;
+            pokeVM.masterListPokemon[pokeMasterIndex].URL = url;
+        }
+
+        // Resets form but retains master list
+        private void ResetView()
+        {
+            ModelState.Clear();
+            pokeVM.selectedPokemon = null;
+            pokeVM.searchPokemon = null;
         }
     }
 }

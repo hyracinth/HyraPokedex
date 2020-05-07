@@ -12,6 +12,8 @@ namespace HyraPokedex
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            // Registers service as singleton
+            services.Add(new ServiceDescriptor(typeof(IPokeApiService), new PokeApiService()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

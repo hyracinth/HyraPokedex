@@ -43,19 +43,19 @@
                     </div>
                 }
 
-                @if (Model.selectedPokemonId == 0)
+                @if (Model.selectedPokemon == null)
                 {
                     <p class="note note-secondary">
                         <strong>Note:</strong> Choose a Pokemon from the list to show additional details!
                     </p>
                 }
 
-                @if (Model.selectedPokemonId != 0)
+                @if (Model.selectedPokemon != null)
                 {
                     <div class="card col-sm-10 col-md-4" style="overflow:auto">
                         <img class="card-img-top" src=@Model.selectedPokemon.Sprites.FrontDefault alt="Card image cap">
                         <div class="card-body">
-                            <h4 class="card-title uppercase"><a>@Model.selectedPokemon.Name</a></h4>
+                            <h4 class="card-title uppercase">@Model.selectedPokemon.Name</h4>
                             <p class="card-text">
                                 Description not yet implemented
                             </p>
