@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace HyraPokedex.Models.PokeApi
 {
     public class PokemonSprites
     {
-        public string front_default { get; set; }
+        [JsonProperty("front_default")]
+        public string FrontDefault { get; set; }
     }
 }

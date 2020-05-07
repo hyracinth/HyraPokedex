@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace HyraPokedex.Models.PokeApi
 {
     public class Pokemon
     {
+        public bool DataRetrieved { get; set; } = false;
         // URL for pokemon details
         [JsonProperty("url")]
         public string URL { get; set; }
@@ -18,7 +15,7 @@ namespace HyraPokedex.Models.PokeApi
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("pokemonSprites")]
-        public PokemonSprites PokemonSprites { get; set; }
+        [JsonProperty("sprites")]
+        public PokemonSprites Sprites { get; set; }
     }
 }
