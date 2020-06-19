@@ -9,13 +9,20 @@ namespace HyraPokedex.Models.PokeApi
         [JsonProperty("url")]
         public string URL { get; set; }
 
-        [JsonProperty("id")]
-        public int ID { get; set; }
-
         [JsonProperty("name")]
         public string Name { get; set; }
 
+
+        [JsonProperty("id")]
+        public int ID { get; set; }
+
         [JsonProperty("sprites")]
         public PokemonSprites Sprites { get; set; }
+
+        [JsonProperty("species")]
+        public NamedApiResource ApiResSpecies { get; set; }
+
+        [JsonIgnore]
+        public Species Species { get; set; }
     }
 }

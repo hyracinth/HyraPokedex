@@ -39,7 +39,22 @@ namespace HyraPokedex
                     pokemonResp = JsonConvert.DeserializeObject<Pokemon>(apiResponse);
                 }
             }
+            pokemonResp.Species = await GetPokemonSpecies(pokemonResp.ApiResSpecies.URL);
             return pokemonResp;
+        }
+
+        public async Task<Species> GetPokemonSpecies(string url)
+        {
+            Species speciesResp = null;
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync(url))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    speciesResp = JsonConvert.DeserializeObject<Species>(apiResponse);
+                }
+            }
+            return speciesResp;
         }
     }
 }

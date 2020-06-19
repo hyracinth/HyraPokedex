@@ -1,6 +1,6 @@
 ﻿
 @model HyraPokedex.Models.HyraPokedexVM
-@{ Layout = "_Layout"; ViewBag.Title = "HyraPokedex - Pokedex";}
+@{ Layout = "_Layout"; ViewBag.Title = "Hyra - Pokedex";}
 
 <style type="text/css">
     .uppercase {
@@ -57,7 +57,7 @@
                         <div class="card-body">
                             <h4 class="card-title uppercase">@Model.selectedPokemon.Name</h4>
                             <p class="card-text">
-                                Description not yet implemented
+                                @Model.selectedPokemon.Species.FlavorTexts[1].Text
                             </p>
                         </div>
                     </div>
